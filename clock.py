@@ -10,7 +10,6 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 import urllib
 import datetime
 
-# LINE 聊天機器人的基本資料
 config = configparser.ConfigParser()
 config.read('config.ini')
 
@@ -26,19 +25,10 @@ def scheduled_job():
     print(f'{datetime.datetime.now().ctime()}')
     print('========== APScheduler CRON =========')
 
-    url = "https://你-APP-的名字.herokuapp.com/"
+    url = "https://family-partial-disease-center.herokuapp.com/"
     conn = urllib.request.urlopen(url)
 
     for key, value in conn.getheaders():
         print(key, value)
-        
-
-@sched.scheduled_job('cron', day_of_week='mon-fri', hour=6, minute=30)
-def scheduled_job():
-    print('========== APScheduler CRON =========')
-    print('This job is run every weekday at 6:30')
-    print('========== APScheduler CRON =========')
-
-    line_bot_api.push_message(to, TextSendMessage(text=push_text))
 
 sched.start()
