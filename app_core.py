@@ -1,12 +1,17 @@
 from __future__ import unicode_literals
 import os
-from flask import Flask, request, abort
+
+# 增加了 render_template
+from flask import Flask, request, abort, render_template
+
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage
+from linebot.models import MessageEvent, TextMessage, TextSendMessage, ImageSendMessage
 
 import configparser
 
+import urllib
+import re
 import random
 
 app = Flask(__name__)
@@ -18,6 +23,10 @@ config.read('config.ini')
 line_bot_api = LineBotApi(config.get('line-bot', 'channel_access_token'))
 handler = WebhookHandler(config.get('line-bot', 'channel_secret'))
 
+@app.route("/")
+def home():
+    return render_template("home_pixijs.html")
+
 
 # 接收 LINE 的資訊
 @app.route("/callback", methods=['POST'])
@@ -28,14 +37,29 @@ def callback():
     app.logger.info("Request body: " + body)
 
     try:
-        print(body, signature)
         handler.handle(body, signature)
-
     except InvalidSignatureError:
         abort(400)
 
     return 'OK'
 
+@handler.add(MessageEvent, message=TextMessage)
+def pretty_echo(event):
+
+    if event.source.user_id != "Udeadbeefdeadbeefdeadbeefdeadbeef":
+
+        if event.message.text:
+
+            pretty_text += i
+            pretty_text += random.choice(pretty_note)
+
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=pretty_text)
+        )
+
+
+"""
 # 學你說話
 @handler.add(MessageEvent, message=TextMessage)
 def pretty_echo(event):
@@ -55,6 +79,6 @@ def pretty_echo(event):
             event.reply_token,
             TextSendMessage(text=pretty_text)
         )
-
+"""
 if __name__ == "__main__":
     app.run()
